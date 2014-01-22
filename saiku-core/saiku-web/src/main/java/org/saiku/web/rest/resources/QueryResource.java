@@ -741,6 +741,19 @@ public class QueryResource {
 		if (log.isDebugEnabled()) {
 			log.debug("TRACK\t"  + "\t/query/" + queryName + "/result"+formatter+"\tGET");
 		}
+		  boolean colTotals = false;
+	        boolean rowTotals = true;
+	        if (formatter != null) {
+	            int colDelimiter = formatter.indexOf('_');
+	            int rowDelimiter = formatter.indexOf('_', colDelimiter + 1);
+	            if ((colDelimiter >= 0) && (rowDelimiter >= 0)) {
+	                colTotals = formatter.substring(colDelimiter + 1, rowDelimiter).equals("true");
+	                rowTotals = formatter.substring(rowDelimiter + 1).equals("true");
+	                formatter = formatter.substring(0, colDelimiter);
+	                RestUtil.showColTotals = colTotals;
+	                RestUtil.showRowTotals = rowTotals;
+	            }
+	        }
 		try {
 			CellDataSet cs = olapQueryService.execute(queryName,formatter);
 			return RestUtil.convert(cs, limit);
